@@ -38,7 +38,10 @@ use objc2::{
   AllocAnyThread, DeclaredClass, MainThreadOnly, Message,
 };
 #[cfg(target_os = "macos")]
-use objc2_app_kit::{NSApplication, NSAutoresizingMaskOptions, NSTitlebarSeparatorStyle, NSView};
+use objc2_app_kit::{
+  NSApplication, NSAutoresizingMaskOptions, NSTitlebarSeparatorStyle, NSView,
+  NSWritingToolsBehavior,
+};
 #[cfg(target_os = "macos")]
 use objc2_core_foundation::CGSize;
 use objc2_core_foundation::{CGPoint, CGRect};
@@ -216,6 +219,14 @@ impl InnerWebView {
         .unwrap_or_else(|| WKWebViewConfiguration::new(mtm));
       #[cfg(target_os = "ios")]
       let config = WKWebViewConfiguration::new(mtm);
+
+      #[cfg(target_os = "macos")]
+      if NSObject::respondsToSelector(&config, objc2::sel!(setWritingToolsBehavior:)) {
+        let _: () = objc2::msg_send![
+          &config,
+          setWritingToolsBehavior: NSWritingToolsBehavior::None
+        ];
+      }
 
       // Incognito mode
       let (os_major_version, _, _) = util::operating_system_version();
