@@ -61,6 +61,12 @@ define_class!(
       self.ivars().accept_first_mouse
     }
 
+    #[cfg(target_os = "macos")]
+    #[unsafe(method(allowsWritingToolsAffordance))]
+    fn allows_writing_tools_affordance(&self) -> Bool {
+      Bool::NO
+    }
+
     #[cfg(target_os = "ios")]
     #[unsafe(method_id(inputAccessoryView))]
     fn input_accessory_view(&self) -> Option<Retained<objc2_ui_kit::UIView>> {
